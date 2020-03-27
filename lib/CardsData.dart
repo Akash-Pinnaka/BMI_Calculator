@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+const kDataStyle = TextStyle(
+  fontSize: 18,
+);
 class CardsData extends StatelessWidget {
 
   final String label;
@@ -21,9 +24,7 @@ class CardsData extends StatelessWidget {
         ),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 18,
-          ),
+          style: kDataStyle,
         )
       ],
     );
