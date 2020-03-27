@@ -1,16 +1,17 @@
 import 'dart:ui';
+import 'package:bmi_calculator/pages/result_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'Cards.dart';
-import 'CardsData.dart';
-
+import '../components/Cards.dart';
+import '../components/CardsData.dart';
+import '../components/bmi_calculator.dart';
 
 const activeCardColor = Color(0xFF1D1F33);
 const bottomContainerColor = Color(0xFFEA1556);
 const inactiveCardColor = Color(0xFF111328);
 
-enum Gender {Male,Female}
+enum Gender { Male, Female }
 
 class InputPage extends StatefulWidget {
   @override
@@ -19,9 +20,9 @@ class InputPage extends StatefulWidget {
 
 class _InputPageState extends State<InputPage> {
   Gender selectedGender;
-  int height=160;
-  int weight=50;
-  int age=18;
+  int height = 160;
+  int weight = 50;
+  int age = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -36,30 +37,34 @@ class _InputPageState extends State<InputPage> {
               children: <Widget>[
                 Expanded(
                   child: Cards(
-                    function: (){
+                    function: () {
                       setState(() {
-                        selectedGender=Gender.Male;
+                        selectedGender = Gender.Male;
                       });
                     },
                     data: CardsData(
                       label: "MALE",
                       icon: FontAwesomeIcons.mars,
                     ),
-                    color: selectedGender==Gender.Male?activeCardColor:inactiveCardColor,
+                    color: selectedGender == Gender.Male
+                        ? activeCardColor
+                        : inactiveCardColor,
                   ),
                 ),
                 Expanded(
                   child: Cards(
-                    function: (){
+                    function: () {
                       setState(() {
-                        selectedGender=Gender.Female;
+                        selectedGender = Gender.Female;
                       });
                     },
                     data: CardsData(
                       label: "FEMALE",
                       icon: FontAwesomeIcons.venus,
                     ),
-                    color: selectedGender==Gender.Female?activeCardColor:inactiveCardColor,
+                    color: selectedGender == Gender.Female
+                        ? activeCardColor
+                        : inactiveCardColor,
                   ),
                 ),
               ],
@@ -98,10 +103,10 @@ class _InputPageState extends State<InputPage> {
                       inactiveTrackColor: Color(0xFF8D8E98),
                       thumbColor: Color(0xFFEB1555),
                       overlayColor: Color(0x29EB1555),
-                      thumbShape:RoundSliderThumbShape(
+                      thumbShape: RoundSliderThumbShape(
                         enabledThumbRadius: 15,
                       ),
-                      overlayShape:RoundSliderOverlayShape(
+                      overlayShape: RoundSliderOverlayShape(
                         overlayRadius: 30,
                       ),
                     ),
@@ -109,9 +114,9 @@ class _InputPageState extends State<InputPage> {
                       min: 100.0,
                       max: 210.0,
                       value: height.toDouble(),
-                      onChanged: (newValue){
+                      onChanged: (newValue) {
                         setState(() {
-                          height=newValue.round();
+                          height = newValue.round();
                         });
                       },
                     ),
@@ -145,9 +150,9 @@ class _InputPageState extends State<InputPage> {
                           children: <Widget>[
                             RoundButton(
                               icon: FontAwesomeIcons.minus,
-                              onPress: (){
+                              onPress: () {
                                 setState(() {
-                                  weight--;
+                                  if (weight > 1) weight--;
                                 });
                               },
                             ),
@@ -156,7 +161,7 @@ class _InputPageState extends State<InputPage> {
                             ),
                             RoundButton(
                               icon: FontAwesomeIcons.plus,
-                              onPress: (){
+                              onPress: () {
                                 setState(() {
                                   weight++;
                                 });
@@ -190,9 +195,9 @@ class _InputPageState extends State<InputPage> {
                           children: <Widget>[
                             RoundButton(
                               icon: FontAwesomeIcons.minus,
-                              onPress: (){
+                              onPress: () {
                                 setState(() {
-                                  age--;
+                                  if (age >= 19) age--;
                                 });
                               },
                             ),
@@ -201,7 +206,7 @@ class _InputPageState extends State<InputPage> {
                             ),
                             RoundButton(
                               icon: FontAwesomeIcons.plus,
-                              onPress: (){
+                              onPress: () {
                                 setState(() {
                                   age++;
                                 });
@@ -217,15 +222,31 @@ class _InputPageState extends State<InputPage> {
               ],
             ),
           ),
-          Container(
-            height: 70.0,
-            width: double.infinity,
-            color: bottomContainerColor,
-            child: Center(
-              child: Text(
-                "Calculate BMI",
-                style: TextStyle(
-                  fontSize: 30,
+          GestureDetector(
+            onTap: () {
+              BmiCalculator calc =
+                  BmiCalculator(height: height, weight: weight);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResultPage(
+                    bmiResult: calc.calculateBmi(),
+                    answer: calc.getAnswer(),
+                    resultText: calc.getMessage(),
+                  )
+                ),
+              );
+            },
+            child: Container(
+              height: 70.0,
+              width: double.infinity,
+              color: bottomContainerColor,
+              child: Center(
+                child: Text(
+                  "Calculate BMI",
+                  style: TextStyle(
+                    fontSize: 30,
+                  ),
                 ),
               ),
             ),
@@ -236,13 +257,11 @@ class _InputPageState extends State<InputPage> {
   }
 }
 
-
 class RoundButton extends StatelessWidget {
-
   final IconData icon;
   final Function onPress;
 
-  RoundButton({this.icon,this.onPress});
+  RoundButton({this.icon, this.onPress});
 
   @override
   Widget build(BuildContext context) {
